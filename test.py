@@ -1,22 +1,21 @@
 import json
-import time
 import random
 
-from gevent import pywsgi
+from gevent import pywsgi, sleep
 from geventwebsocket.handler import WebSocketHandler
 
 
-class WebSocketApp(object): 
-    '''Funnel messages coming from an inproc zmq socket to the websocket''' 
- 
+class WebSocketApp(object):
+    '''Send random data to the websocket'''
+
     def __call__(self, environ, start_response):
         ws = environ['wsgi.websocket']
         x = 0
-        while True: 
+        while True:
             data = json.dumps({'x': x, 'y': random.randint(1, 5)})
-            ws.send(data) 
+            ws.send(data)
             x += 1
-            time.sleep(0.5)
+            sleep(0.5)
 
 def main():
     server = pywsgi.WSGIServer(("", 10000), WebSocketApp(),
